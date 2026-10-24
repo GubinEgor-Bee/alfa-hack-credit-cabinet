@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: alfa_db
+    restart: always
+    environment:
+      POSTGRES_DB: alfa_credit_db
+      POSTGRES_USER: alfa_user
+      POSTGRES_PASSWORD: alfa_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: alfa_backend
+    restart: always
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgres://alfa_user:alfa_password@alfa_db:5432/alfa_credit_db
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
