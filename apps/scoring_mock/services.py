@@ -1,0 +1,1 @@
+def calculate_score(application_data): return
